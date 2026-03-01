@@ -18,7 +18,7 @@ const C = {
 };
 
 // ── Animated Logo ──
-const PRODUCTS = ["optimize", "govern", "ops"];
+const PRODUCTS = ["optimise", "govern", "ops"];
 const PRODUCT_COLORS = [C.accent, C.indigo, C.amber];
 
 function AnimatedLogo({ size = 32, light = false }) {
@@ -434,7 +434,7 @@ export default function SyntaWebsite() {
           <FadeIn delay={400}>
             <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
               {[
-                { name: "optimize", label: "License Intelligence", color: C.accent },
+                { name: "optimise", label: "License Intelligence", color: C.accent },
                 { name: "govern", label: "Cloud Governance", color: C.indigo },
                 { name: "ops", label: "IT Operations", color: C.amber },
               ].map(p => (
@@ -492,7 +492,7 @@ export default function SyntaWebsite() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           <ProductCard
-            name="optimize"
+            name="optimise"
             tagline="M365 licence intelligence that pays for itself"
             color={C.accent}
             colorSoft="rgba(32,201,176,0.07)"
