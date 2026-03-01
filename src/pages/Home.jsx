@@ -24,40 +24,54 @@ const PRODUCT_COLORS = [C.accent, C.indigo, C.amber];
 function AnimatedLogo({ size = 32, light = false }) {
   const [text, setText] = useState("");
   const [wordIdx, setWordIdx] = useState(0);
-  const [deleting, setDeleting] = useState(false);
-  const [paused, setPaused] = useState(true);
+  const [phase, setPhase] = useState("typing"); // typing | pausing | deleting | waiting
   const [blink, setBlink] = useState(true);
   const timer = useRef(null);
 
+  // Blink cursor when paused
   useEffect(() => {
-    if (paused) {
+    if (phase === "pausing" || phase === "waiting") {
       const id = setInterval(() => setBlink(v => !v), 480);
       return () => clearInterval(id);
     }
     setBlink(true);
-  }, [paused]);
+  }, [phase]);
 
+  // Main animation loop
   useEffect(() => {
     const word = PRODUCTS[wordIdx];
-    if (!deleting) {
-      if (text.length < word.length) {
-        setPaused(false);
-        timer.current = setTimeout(() => setText(word.slice(0, text.length + 1)), 105);
-      } else {
-        setPaused(true);
-        timer.current = setTimeout(() => { setPaused(false); setDeleting(true); }, 2200);
-      }
-    } else {
-      if (text.length > 0) {
-        timer.current = setTimeout(() => setText(text.slice(0, -1)), 55);
-      } else {
-        setPaused(true);
-        setDeleting(false);
-        timer.current = setTimeout(() => { setPaused(false); setWordIdx((wordIdx + 1) % PRODUCTS.length); }, 400);
-      }
+
+    switch (phase) {
+      case "typing":
+        if (text.length < word.length) {
+          timer.current = setTimeout(() => setText(word.slice(0, text.length + 1)), 105);
+        } else {
+          setPhase("pausing");
+        }
+        break;
+
+      case "pausing":
+        timer.current = setTimeout(() => setPhase("deleting"), 2200);
+        break;
+
+      case "deleting":
+        if (text.length > 0) {
+          timer.current = setTimeout(() => setText(text.slice(0, -1)), 55);
+        } else {
+          setPhase("waiting");
+        }
+        break;
+
+      case "waiting":
+        timer.current = setTimeout(() => {
+          setWordIdx((wordIdx + 1) % PRODUCTS.length);
+          setPhase("typing");
+        }, 400);
+        break;
     }
+
     return () => clearTimeout(timer.current);
-  }, [text, deleting, wordIdx]);
+  }, [text, phase, wordIdx]);
 
   const color = PRODUCT_COLORS[wordIdx];
   const baseColor = light ? "#fff" : C.slate;
@@ -686,7 +700,7 @@ export default function SyntaWebsite() {
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, color: C.slate, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Platform</div>
             {[
-              { name: "synta.optimize", color: C.accent },
+              { name: "synta.optimise", color: C.accent },
               { name: "synta.govern", color: C.indigo },
               { name: "synta.ops", color: C.amber },
             ].map(p => (
